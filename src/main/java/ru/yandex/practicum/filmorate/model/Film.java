@@ -23,7 +23,7 @@ public class Film {
     private final long duration;
     private Set<Long> likes = new HashSet<>();
 
-    public void setId() {
+    public void generateId() {
         if (id == 0) {
             id = nextId;
             nextId++;

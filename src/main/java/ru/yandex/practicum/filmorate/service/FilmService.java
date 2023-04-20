@@ -11,7 +11,6 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,12 +36,7 @@ public class FilmService {
     }
 
     public List<Film> findPopular(int count) {
-        List<Film> films = filmStorage.findAll().stream()
-                .sorted((f1, f2) -> f2.getLikes().size() - f1.getLikes().size())
-                .limit(count)
-                .collect(Collectors.toList());
-        System.out.println(films);
-        return films;
+        return filmStorage.findPopular(count);
     }
 
     public Film create(Film film) {
@@ -50,7 +44,7 @@ public class FilmService {
             log.warn("Попытка добавить фильм с недопустимой датой релиза: {}", film);
             throw new ValidationException("Дата релиза не может быть раньше 28.12.1895");
         }
-        film.setId();
+        film.generateId();
         log.debug("Добавлен фильм: {}", film);
         return filmStorage.create(film);
     }

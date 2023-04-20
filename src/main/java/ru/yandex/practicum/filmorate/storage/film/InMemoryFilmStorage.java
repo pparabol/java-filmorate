@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
@@ -36,6 +37,14 @@ public class InMemoryFilmStorage implements FilmStorage {
     public Film findFilmById(long id) {
         checkFilm(id);
         return films.get(id);
+    }
+
+    @Override
+    public List<Film> findPopular(int count) {
+        return films.values().stream()
+                .sorted((f1, f2) -> f2.getLikes().size() - f1.getLikes().size())
+                .limit(count)
+                .collect(Collectors.toList());
     }
 
     private void checkFilm(long id) {

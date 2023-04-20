@@ -65,7 +65,7 @@ class UserControllerTest {
     @Test
     void shouldThrowExceptionWhenUpdatingNonExistingUser() {
         User user = new User("email@mail.ru", "login", LocalDate.of(2010, 3, 3));
-        user.setId();
+        user.generateId();
         final UserNotFoundException exception = assertThrows(UserNotFoundException.class,
                 () -> controller.update(user)
         );

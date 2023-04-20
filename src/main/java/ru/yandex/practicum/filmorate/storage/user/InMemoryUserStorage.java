@@ -7,7 +7,9 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Component
 public class InMemoryUserStorage implements UserStorage {
@@ -36,6 +38,32 @@ public class InMemoryUserStorage implements UserStorage {
     public User findUserById(long id) {
         checkUser(id);
         return users.get(id);
+    }
+
+    @Override
+    public List<User> findFriends(long id) {
+        User user = findUserById(id);
+        if (user.getFriends().isEmpty()) {
+            return new ArrayList<>();
+        }
+        return user.getFriends().stream()
+                .map(this::findUserById)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<User> findCommonFriends(long id, long otherId) {
+        User user = findUserById(id);
+        User otherUser = findUserById(otherId);
+        if (user.getFriends().isEmpty() || otherUser.getFriends().isEmpty()) {
+            return new ArrayList<>();
+        }
+        Set<Long> commonFriends = user.getFriends().stream()
+                .filter(otherUser.getFriends()::contains)
+                .collect(Collectors.toSet());
+        return commonFriends.stream()
+                .map(this::findUserById)
+                .collect(Collectors.toList());
     }
 
     private void checkUser(long id) {

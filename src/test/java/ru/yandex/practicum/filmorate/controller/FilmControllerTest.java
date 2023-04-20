@@ -86,7 +86,7 @@ class FilmControllerTest {
                 LocalDate.of(2005, 5, 5),
                 100
         );
-        film.setId();
+        film.generateId();
         final FilmNotFoundException exception = assertThrows(FilmNotFoundException.class,
                 () -> controller.update(film)
         );
