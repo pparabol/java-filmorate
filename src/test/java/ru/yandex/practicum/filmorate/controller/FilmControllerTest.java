@@ -3,8 +3,12 @@ package ru.yandex.practicum.filmorate.controller;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -24,7 +28,7 @@ class FilmControllerTest {
     @BeforeEach
     void setUp() {
         validator = Validation.buildDefaultValidatorFactory().getValidator();
-        controller = new FilmController();
+        controller = new FilmController(new FilmService(new InMemoryFilmStorage(), new InMemoryUserStorage()));
     }
 
     @Test
@@ -82,10 +86,11 @@ class FilmControllerTest {
                 LocalDate.of(2005, 5, 5),
                 100
         );
-        final ValidationException exception = assertThrows(ValidationException.class,
+        film.generateId();
+        final FilmNotFoundException exception = assertThrows(FilmNotFoundException.class,
                 () -> controller.update(film)
         );
-        assertEquals("Фильм не найден", exception.getMessage());
+        assertEquals("Фильм № " + film.getId() + " не найден", exception.getMessage());
         assertTrue(controller.findAll().isEmpty());
     }
 }

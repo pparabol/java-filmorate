@@ -3,8 +3,10 @@ package ru.yandex.practicum.filmorate.controller;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -23,7 +25,7 @@ class UserControllerTest {
     @BeforeEach
     void setUp() {
         validator = Validation.buildDefaultValidatorFactory().getValidator();
-        controller = new UserController();
+        controller = new UserController(new UserService(new InMemoryUserStorage()));
     }
 
     @Test
@@ -63,10 +65,11 @@ class UserControllerTest {
     @Test
     void shouldThrowExceptionWhenUpdatingNonExistingUser() {
         User user = new User("email@mail.ru", "login", LocalDate.of(2010, 3, 3));
-        final ValidationException exception = assertThrows(ValidationException.class,
+        user.generateId();
+        final UserNotFoundException exception = assertThrows(UserNotFoundException.class,
                 () -> controller.update(user)
         );
-        assertEquals("Пользователь не найден", exception.getMessage());
+        assertEquals("Пользователь № " + user.getId() + " не найден", exception.getMessage());
         assertTrue(controller.findAll().isEmpty());
     }
 }
