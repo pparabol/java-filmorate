@@ -1,7 +1,7 @@
 # java-filmorate
 Template repository for Filmorate project.
 ## ER-диаграмма 
-![ER-diagram](https://dbdiagram.io/d/6454ef13dca9fb07c491b795)
+![ER-diagram](file:///C:/Users/Полина/Downloads/ER%20giagram.PNG)
 ## Примеры запросов:
 ### *Получение пользователя по id*
 
