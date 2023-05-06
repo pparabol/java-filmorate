@@ -23,5 +23,5 @@ Template repository for Filmorate project.
     WHERE film_id IN
         (SELECT film_id
         FROM like
-        ORDER BY SUM(user_id) DESC
+        ORDER BY COUNT(user_id) DESC
         LIMIT 10);
