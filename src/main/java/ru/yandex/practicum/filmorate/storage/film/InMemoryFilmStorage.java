@@ -47,6 +47,16 @@ public class InMemoryFilmStorage implements FilmStorage {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public void like(long filmId, long userId) {
+
+    }
+
+    @Override
+    public void unlike(long filmId, long userId) {
+
+    }
+
     private void checkFilm(long id) {
         if (!films.containsKey(id)) {
             throw new FilmNotFoundException(String.format("Фильм № %d не найден", id));

@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -15,6 +16,7 @@ import java.util.List;
 @Slf4j
 public class UserService {
 
+    @Qualifier("userDbStorage")
     private final UserStorage userStorage;
 
     public void addToFriends(long userId, long friendId) {
@@ -24,9 +26,16 @@ public class UserService {
         User user = userStorage.findUserById(userId);
         User friend = userStorage.findUserById(friendId);
 
-        user.addFriend(friendId);
         friend.addFriend(userId);
-        log.debug("Пользователь № {} добавил в друзья пользователя № {}", userId, friendId);
+        log.debug("Пользователь № {} отправил заявку в друзья пользователю № {}", userId, friendId);
+
+        boolean isAccepted = false;
+        if (user.getFriends().contains(friendId)) {
+            isAccepted = true;
+            user.addFriend(friendId);
+            log.debug("Дружба стала взаимной у пользователей № {} и № {}", userId, friendId);
+        }
+        userStorage.addFriend(userId, friendId, isAccepted);
     }
 
     public void removeFromFriends(long userId, long friendId) {
@@ -37,8 +46,10 @@ public class UserService {
         User friend = userStorage.findUserById(friendId);
 
         user.removeFriend(friendId);
-        friend.removeFriend(userId);
         log.debug("Пользователь № {} удалил из друзей пользователя № {}", userId, friendId);
+
+        boolean isMutual = !friend.getFriends().contains(userId);
+        userStorage.removeFriend(userId, friendId, isMutual);
     }
 
     public List<User> findFriends(long id) {
@@ -50,9 +61,7 @@ public class UserService {
     }
 
     public User create(User user) {
-        user.generateId();
         checkName(user);
-        log.debug("Создан пользователь: {}", user);
         return userStorage.create(user);
     }
 

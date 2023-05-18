@@ -6,13 +6,13 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Data
 public class User {
-
-    private static long nextId = 1;
 
     private long id;
     @Email(message = "Некорректный email")
@@ -24,18 +24,20 @@ public class User {
     private final LocalDate birthday;
     private Set<Long> friends = new HashSet<>();
 
-    public void generateId() {
-        if (id == 0) {
-            id = nextId;
-            nextId++;
-        }
-    }
-
     public void addFriend(long id) {
         friends.add(id);
     }
 
     public void removeFriend(long id) {
         friends.remove(id);
+    }
+
+    public Map<String, Object> toMap() {
+        Map<String, Object> values = new HashMap<>();
+        values.put("email", email);
+        values.put("login", login);
+        values.put("name", name);
+        values.put("birthday", birthday);
+        return values;
     }
 }
