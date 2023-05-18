@@ -25,8 +25,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class UserStorageTest {
 
+    @Autowired
     @Qualifier("userDbStorage")
     private final UserStorage userStorage;
+    @Autowired
     private final JdbcTemplate jdbcTemplate;
     private User user;
     private User otherUser;

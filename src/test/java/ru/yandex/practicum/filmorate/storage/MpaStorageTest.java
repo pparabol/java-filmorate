@@ -18,6 +18,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class MpaStorageTest {
 
+    @Autowired
     private final MpaStorage mpaStorage;
 
     @Test

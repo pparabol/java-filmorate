@@ -28,9 +28,12 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class GenreStorageTest {
 
+    @Autowired
     private final GenreStorage genreStorage;
+    @Autowired
     @Qualifier("filmDbStorage")
     private final FilmStorage filmStorage;
+    @Autowired
     private final JdbcTemplate jdbcTemplate;
     private Film film;
 
