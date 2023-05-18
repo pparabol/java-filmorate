@@ -28,7 +28,7 @@ public class GenreDbStorage implements GenreStorage {
     public Genre findGenreById(int id) {
         SqlRowSet genreRows = jdbcTemplate.queryForRowSet("select * from genres where genre_id = ?", id);
 
-        if(genreRows.next()) {
+        if (genreRows.next()) {
             return new Genre(genreRows.getInt("genre_id"), genreRows.getString("name"));
         } else {
             throw new GenreNotFoundException(String.format("Жанр № %d не найден", id));
@@ -46,7 +46,7 @@ public class GenreDbStorage implements GenreStorage {
     public void addFilmGenres(long filmId, Collection<Genre> genres) {
         String sql = "insert into film_genres (film_id, genre_id) values (?, ?)";
 
-        for (Genre genre: genres) {
+        for (Genre genre : genres) {
             int genreId = genre.getId();
             jdbcTemplate.update(sql, filmId, genreId);
         }

@@ -50,7 +50,7 @@ public class UserDbStorage implements UserStorage {
                 user.getId()
         );
 
-        if(responseNumber != 0) {
+        if (responseNumber != 0) {
             log.debug("Обновлён пользователь: {}", user);
             return user;
         } else {
@@ -69,8 +69,8 @@ public class UserDbStorage implements UserStorage {
     public User findUserById(long id) {
         SqlRowSet userRows = jdbcTemplate.queryForRowSet("select * from users where user_id = ?", id);
 
-        if(userRows.next()) {
-            User user =  new User(
+        if (userRows.next()) {
+            User user = new User(
                     userRows.getString("email"),
                     userRows.getString("login"),
                     Objects.requireNonNull(userRows.getDate("birthday")).toLocalDate()
