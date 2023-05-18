@@ -1,7 +1,7 @@
 # java-filmorate
 Template repository for Filmorate project.
 ## ER-диаграмма 
-![ER-diagram](https://ie.wampi.ru/2023/05/06/ER-giagram.png)
+![ER-diagram](https://ic.wampi.ru/2023/05/18/ER-diagram.png)
 ## Примеры запросов:
 ### *Получение пользователя по id*
 
@@ -10,19 +10,19 @@ Template repository for Filmorate project.
         login,
         name,
         birthday
-    FROM user
+    FROM users
     WHERE user_id=1;
 ### *Получение всех фильмов*
 
-    SELECT name
-    FROM film;
+    SELECT *
+    FROM films;
 ### *Получение топ-10 популярных фильмов*
     
     SELECT name
-    FROM film
+    FROM films
     WHERE film_id IN
         (SELECT film_id
-        FROM like
+        FROM likes
         GROUP BY film_id
         ORDER BY COUNT(user_id) DESC
         LIMIT 10);
