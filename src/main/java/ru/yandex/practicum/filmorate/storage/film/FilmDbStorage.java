@@ -58,7 +58,7 @@ public class FilmDbStorage implements FilmStorage {
                 film.getId()
         );
 
-        if(responseNumber != 0) {
+        if (responseNumber != 0) {
             updateMpaAndGenres(film);
             genreStorage.updateFilmGenres(film.getId(), film.getGenres());
 
@@ -80,7 +80,7 @@ public class FilmDbStorage implements FilmStorage {
     public Film findFilmById(long id) {
         SqlRowSet filmRows = jdbcTemplate.queryForRowSet("select * from films where film_id = ?", id);
 
-        if(filmRows.next()) {
+        if (filmRows.next()) {
             Film film = new Film(
                     filmRows.getLong("film_id"),
                     filmRows.getString("name"),
