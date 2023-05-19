@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -18,21 +19,23 @@ import java.util.List;
 public class FilmService {
 
     private static final LocalDate MIN_RELEASE_DATE = LocalDate.of(1895, 12, 28);
+    @Qualifier("filmDbStorage")
     private final FilmStorage filmStorage;
+    @Qualifier("userDbStorage")
     private final UserStorage userStorage;
 
     public void like(long filmId, long userId) {
         Film film = filmStorage.findFilmById(filmId);
         User user = userStorage.findUserById(userId);
         film.addLike(userId);
-        log.debug("Пользователь № {} поставил лайк фильму № {}", userId, filmId);
+        filmStorage.like(filmId, userId);
     }
 
     public void unlike(long filmId, long userId) {
         Film film = filmStorage.findFilmById(filmId);
         User user = userStorage.findUserById(userId);
         film.removeLike(userId);
-        log.debug("Пользователь № {} убрал лайк с фильма № {}", userId, filmId);
+        filmStorage.unlike(userId, filmId);
     }
 
     public List<Film> findPopular(int count) {
@@ -44,8 +47,6 @@ public class FilmService {
             log.warn("Попытка добавить фильм с недопустимой датой релиза: {}", film);
             throw new ValidationException("Дата релиза не может быть раньше 28.12.1895");
         }
-        film.generateId();
-        log.debug("Добавлен фильм: {}", film);
         return filmStorage.create(film);
     }
 

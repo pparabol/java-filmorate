@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
@@ -33,10 +34,12 @@ class FilmControllerTest {
 
     @Test
     void emptyNameShouldFailValidation() {
-        Film film = new Film("",
+        Film film = new Film(1,
+                "",
                 "description",
                 LocalDate.of(2003, 5, 5),
-                3
+                3,
+                new Mpa(1, "G")
         );
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertFalse(violations.isEmpty());
@@ -44,12 +47,14 @@ class FilmControllerTest {
 
     @Test
     void tooLargeDescriptionShouldFailValidation() {
-        Film film = new Film("film",
+        Film film = new Film(1,
+                "film",
                 "extremely large description extremely large description extremely large description " +
                         "extremely large description extremely large description extremely large description " +
                         "extremely large description extremely large description",
                 LocalDate.of(2003, 5, 5),
-                3
+                3,
+                new Mpa(1, "G")
         );
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertFalse(violations.isEmpty());
@@ -57,10 +62,12 @@ class FilmControllerTest {
 
     @Test
     void shouldThrowExceptionWhenInvalidReleaseDate() {
-        Film film = new Film("film",
+        Film film = new Film(1,
+                "film",
                 "description",
                 LocalDate.of(1000, 5, 5),
-                3
+                3,
+                new Mpa(1, "G")
         );
         final ValidationException exception = assertThrows(ValidationException.class,
                 () -> controller.create(film)
@@ -70,10 +77,12 @@ class FilmControllerTest {
 
     @Test
     void negativeDurationShouldFailValidation() {
-        Film film = new Film("film",
+        Film film = new Film(1,
+                "film",
                 "description",
                 LocalDate.of(2005, 5, 5),
-                -300
+                -300,
+                new Mpa(1, "G")
         );
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertFalse(violations.isEmpty());
@@ -81,12 +90,13 @@ class FilmControllerTest {
 
     @Test
     void shouldThrowExceptionWhenUpdatingNonExistingFilm() {
-        Film film = new Film("film",
+        Film film = new Film(1,
+                "film",
                 "description",
                 LocalDate.of(2005, 5, 5),
-                100
+                100,
+                new Mpa(1, "G")
         );
-        film.generateId();
         final FilmNotFoundException exception = assertThrows(FilmNotFoundException.class,
                 () -> controller.update(film)
         );

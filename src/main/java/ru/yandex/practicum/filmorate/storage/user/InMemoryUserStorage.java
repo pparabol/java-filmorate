@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -12,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class InMemoryUserStorage implements UserStorage {
 
     private final Map<Long, User> users = new ConcurrentHashMap<>();
@@ -38,6 +40,29 @@ public class InMemoryUserStorage implements UserStorage {
     public User findUserById(long id) {
         checkUser(id);
         return users.get(id);
+    }
+
+    @Override
+    public void addFriend(long userId, long friendId) {
+        User user = findUserById(userId);
+        User friend = findUserById(friendId);
+
+        friend.addFriend(userId);
+        log.debug("Пользователь № {} отправил заявку в друзья пользователю № {}", userId, friendId);
+
+        if (user.getFriends().contains(friendId)) {
+            user.addFriend(friendId);
+            log.debug("Дружба стала взаимной у пользователей № {} и № {}", userId, friendId);
+        }
+    }
+
+    @Override
+    public void removeFriend(long userId, long friendId) {
+        User user = findUserById(userId);
+        findUserById(friendId);
+
+        user.removeFriend(friendId);
+        log.debug("Пользователь № {} удалил из друзей пользователя № {}", userId, friendId);
     }
 
     @Override
