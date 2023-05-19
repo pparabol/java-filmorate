@@ -14,7 +14,6 @@ import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Component("userDbStorage")
 @Slf4j
@@ -86,11 +85,17 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public void addFriend(long userId, long friendId, boolean isAccepted) {
+    public void addFriend(long userId, long friendId) {
+        findUserById(userId);
+        findUserById(friendId);
+
+        log.debug("Пользователь № {} отправил заявку в друзья пользователю № {}", userId, friendId);
+
         String sql;
-        if (isAccepted) {
+        if (isFriends(userId, friendId)) {
             sql = "update friends set is_accepted = true " +
                     "where user_id = ? and friend_id = ?";
+            log.debug("Дружба стала взаимной у пользователей № {} и № {}", userId, friendId);
         } else {
             sql = "insert into friends (user_id, friend_id, is_accepted) " +
                     "values (?, ?, false)";
@@ -99,31 +104,36 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public void removeFriend(long userId, long friendId, boolean isMutual) {
+    public void removeFriend(long userId, long friendId) {
+        findUserById(userId);
+        findUserById(friendId);
+
         String sql;
-        if (isMutual) {
+        if (!isFriends(friendId, userId)) {
             sql = "delete from friends where user_id = ? and friend_id = ?";
         } else {
             sql = "update friends set is_accepted = false " +
                     "where user_id = ? and friend_id = ?";
         }
         jdbcTemplate.update(sql, userId, friendId);
+        log.debug("Пользователь № {} удалил из друзей пользователя № {}", userId, friendId);
     }
 
     @Override
     public List<User> findFriends(long id) {
-        String sql = "select * from users where user_id in" +
+        String sql = "select * from users where user_id in " +
                 "(select friend_id from friends where user_id = ?)";
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs), id);
     }
 
     @Override
     public List<User> findCommonFriends(long id, long otherId) {
-        List<User> userFriends = findFriends(id);
-        List<User> otherUserFriends = findFriends(otherId);
-        return userFriends.stream()
-                .filter(otherUserFriends::contains)
-                .collect(Collectors.toList());
+        String sql = "select * from users where user_id in " +
+                "(select friend_id from friends where user_id = ?) " +
+                "intersect " +
+                "select * from users where user_id in " +
+                "(select friend_id from friends where user_id = ?)";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs), id, otherId);
     }
 
     private User makeUser(ResultSet rs) throws SQLException {
@@ -144,5 +154,13 @@ public class UserDbStorage implements UserStorage {
                 (rs, rowNum) -> rs.getLong("friend_id"), user.getId()
         );
         user.setFriends(new HashSet<>(friends));
+    }
+
+    private boolean isFriends(long userId, long otherId) {
+        SqlRowSet friendsRows = jdbcTemplate.queryForRowSet(
+                "select * from friends where user_id = ? and friend_id = ?",
+                userId, otherId
+        );
+        return friendsRows.next();
     }
 }

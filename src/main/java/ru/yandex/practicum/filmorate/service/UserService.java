@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -13,7 +12,6 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class UserService {
 
     @Qualifier("userDbStorage")
@@ -23,33 +21,14 @@ public class UserService {
         if (userId == friendId) {
             throw new ValidationException("Нельзя добавить себя в друзья");
         }
-        User user = userStorage.findUserById(userId);
-        User friend = userStorage.findUserById(friendId);
-
-        friend.addFriend(userId);
-        log.debug("Пользователь № {} отправил заявку в друзья пользователю № {}", userId, friendId);
-
-        boolean isAccepted = false;
-        if (user.getFriends().contains(friendId)) {
-            isAccepted = true;
-            user.addFriend(friendId);
-            log.debug("Дружба стала взаимной у пользователей № {} и № {}", userId, friendId);
-        }
-        userStorage.addFriend(userId, friendId, isAccepted);
+        userStorage.addFriend(userId, friendId);
     }
 
     public void removeFromFriends(long userId, long friendId) {
         if (userId == friendId) {
             throw new ValidationException("Нельзя удалить себя из друзей");
         }
-        User user = userStorage.findUserById(userId);
-        User friend = userStorage.findUserById(friendId);
-
-        user.removeFriend(friendId);
-        log.debug("Пользователь № {} удалил из друзей пользователя № {}", userId, friendId);
-
-        boolean isMutual = !friend.getFriends().contains(userId);
-        userStorage.removeFriend(userId, friendId, isMutual);
+        userStorage.removeFriend(userId, friendId);
     }
 
     public List<User> findFriends(long id) {

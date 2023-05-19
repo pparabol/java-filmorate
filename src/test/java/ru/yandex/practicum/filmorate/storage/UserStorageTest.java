@@ -109,7 +109,7 @@ public class UserStorageTest {
         User testUser = userStorage.create(user);
         User friend = userStorage.create(otherUser);
 
-        userStorage.addFriend(testUser.getId(), friend.getId(), false);
+        userStorage.addFriend(testUser.getId(), friend.getId());
 
         User userWithFriend = userStorage.findUserById(testUser.getId());
         User userWithoutFriend = userStorage.findUserById(friend.getId());
@@ -128,9 +128,9 @@ public class UserStorageTest {
     public void testRemoveFriend() {
         User testUser = userStorage.create(user);
         User friend = userStorage.create(otherUser);
-        userStorage.addFriend(testUser.getId(), friend.getId(), false);
+        userStorage.addFriend(testUser.getId(), friend.getId());
 
-        userStorage.removeFriend(testUser.getId(), friend.getId(), true);
+        userStorage.removeFriend(testUser.getId(), friend.getId());
 
         User userWithoutFriend = userStorage.findUserById(testUser.getId());
 
@@ -149,8 +149,8 @@ public class UserStorageTest {
         ));
         User otherFriend = userStorage.create(otherUser);
 
-        userStorage.addFriend(testUser.getId(), friend.getId(), false);
-        userStorage.addFriend(testUser.getId(), otherFriend.getId(), false);
+        userStorage.addFriend(testUser.getId(), friend.getId());
+        userStorage.addFriend(testUser.getId(), otherFriend.getId());
 
         List<User> actual = userStorage.findFriends(testUser.getId());
 
@@ -170,8 +170,8 @@ public class UserStorageTest {
         ));
         User otherFriend = userStorage.create(otherUser);
 
-        userStorage.addFriend(testUser.getId(), friend.getId(), false);
-        userStorage.addFriend(otherFriend.getId(), friend.getId(), false);
+        userStorage.addFriend(testUser.getId(), friend.getId());
+        userStorage.addFriend(otherFriend.getId(), friend.getId());
 
         List<User> actual = userStorage.findCommonFriends(testUser.getId(), otherFriend.getId());
 
