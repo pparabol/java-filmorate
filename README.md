@@ -1,5 +1,5 @@
-# java-filmorate
-Template repository for Filmorate project.
+# Filmorate
+Приложение для поиска и оценки фильмов.
 ## ER-диаграмма 
 ![ER-diagram](https://ic.wampi.ru/2023/05/18/ER-diagram.png)
 ## Примеры запросов:
